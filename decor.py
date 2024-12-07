@@ -5,17 +5,21 @@ import main
 import json
 import io
 import csv
+from abc import ABC, abstractmethod
 
 
-class Component():
+class Component(ABC):
+
     """
     Базовый интерфейс Компонента определяет поведение, которое изменяется
     декораторами.
     """
 
+    @abstractmethod
     def get_currencies(self):
         pass
 
+    @abstractmethod
     def get_currency(self, cid):
         pass
 
