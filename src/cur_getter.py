@@ -3,13 +3,7 @@ import time
 class CurrenciesLst():
 
     def __init__(self):
-        self.__cur_lst = [{
-            'GBP': ('Фунт стерлингов Соединенного королевства', '113,2069')
-        }, {
-            'KZT': ('Казахстанских тенге', '19,8264')
-        }, {
-            'TRY': ('Турецких лир', '33,1224')
-        }]
+        pass
 
 
 class Singleton(type):
@@ -72,45 +66,10 @@ class BaseClass:
                     'Value').text
                 value = valute_cur_val.split(',')
                 valute_charcode = _v.find('CharCode').text
-                valute[valute_charcode] = ('name":"'+str(valute_cur_name), 'value":"'+(value[0]), 'fractions":"'+(value[1]))
+                valute[valute_charcode] = f'''('name':'{valute_cur_name}', 'value':'{value[0]}', 'fractions':'{value[1]}')'''
                 result.append(valute)
 
         return result
-
-    def get_currency(self, currency_id : str) -> list:
-
-        if time.time() - self.last_time < self.delay:
-            print(f'Please, wait {self.delay - (time.time() - self.last_time)} seconds')
-            return [f'Please, wait {self.delay - (time.time() - self.last_time)} seconds']
-        self.last_time = time.time()
-
-
-        import requests
-        from xml.etree import \
-            ElementTree as ET
-
-        cur_res_str = requests.get('http://www.cbr.ru/scripts/XML_daily.asp')
-        result = []
-
-        root = ET.fromstring(cur_res_str.content)
-        valutes = root.findall(
-            "Valute"
-        )
-        for _v in valutes:
-            valute_id = _v.get('ID')
-            valute = {}
-            if str(valute_id) == currency_id:
-                valute_cur_name, valute_cur_val = _v.find('Name').text, _v.find(
-                    'Value').text
-                value = valute_cur_val.split(',')
-                valute_charcode = _v.find('CharCode').text
-                valute[valute_charcode] = ("name"+str(valute_cur_name), "value"+(value[0]), "fractions"+(value[1]))
-                result.append(valute)
-
-        if len(result):
-            return result
-        else:
-            return [{'R9999': None}]
 
 
     def visualize_currencies(self):
@@ -132,35 +91,5 @@ class BaseClass:
 
         plt.show()
 
-
-
-
-
 class MyClass(BaseClass, metaclass=Singleton):
     pass
-
-
-
-if __name__ == '__main__':
-
-    #res = get_currencies(['R01035', 'R01335', 'R01700J'])
-
-
-    #CurrenciesLst.visualize_currencies(get_currencies(['R01035', 'R01335', 'R01700J']))
-
-    mc = MyClass()
-    mc.tracking_currencies = ['R01035', 'R01335', 'R01700J']
-    print(mc.get_currencies())
-    print(mc.get_currency('R01090B'))
-    time.sleep(1)
-    assert mc.get_currency('R01090A') == [{'R9999': None}]
-
-    mc2 = MyClass()
-    mc2.delay = 0
-
-    assert mc.get_currency('R01090B')[0]['BYN'][0] == 'Белорусский рубль'
-
-    mc2.tracking_currencies = ['R01625', 'R01720', 'R01820']
-    assert mc.get_currencies()[2]['JPY'][0] == 'Японских иен'
-
-    mc.visualize_currencies()

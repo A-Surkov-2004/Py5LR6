@@ -1,7 +1,4 @@
-from fontTools.t1Lib import write
-from numpy.ma.core import outer
-
-import main
+import src.cur_getter
 import json
 import io
 import csv
@@ -27,7 +24,7 @@ class Component(ABC):
 class ConcreteComponent(Component):
 
     def __init__(self):
-        self.cc = main.MyClass()
+        self.cc = src.cur_getter.MyClass()
         self.cc.delay = 0
         self.cc.tracking_currencies = ['R01035', 'R01335', 'R01700J']
 
@@ -106,7 +103,7 @@ class ConcreteDecoratorA(Decorator):
 
         if str(type(cin)) == "<class 'str'>":
             v = cin.split('\r\n')
-            for i in range(len(v)):
+            for i in range(1, len(v)):
                 v[i] = v[i].split(',')
             ans = []
 
@@ -116,7 +113,7 @@ class ConcreteDecoratorA(Decorator):
                     ans.append(string1.replace('[', '{').replace(']', '}'))
             return json.loads(str(ans).replace("'", ''))
         else:
-            ans = json.loads(str(cin).replace("'", '"').replace('(', '{').replace(')', '}'))
+            ans = json.loads(str(cin).replace('"', '').replace("'", '"').replace('(', '{').replace(')', '}'))
             return ans
 
 
@@ -132,7 +129,8 @@ class ConcreteDecoratorB(Decorator):
     Для нашей программы ConcreteDecoratorB - Класс возвращающий csv
     """
     def get_currencies(self):
-        data = json.loads(str(self.component.get_currencies()).replace("'",'"').replace('(','{').replace(')','}'))
+        cin = self.component.get_currencies()
+        data = json.loads(str(cin).replace('"', '').replace("'", '"').replace('(', '{').replace(')', '}'))
 
         csv_buffer = io.StringIO()
 
@@ -164,31 +162,5 @@ def client_code(component: Component) -> None:
     которыми работает.
     """
 
-    # ...
-
     print(f"RESULT: {component.get_currencies()}", end="")
-
-    # ...
-
-
-if __name__ == '__main__':
-
-    # Таким образом, клиентский код может поддерживать как простые компоненты...
-    simple = ConcreteComponent()
-    print("Client: I've got a simple component:")
-    client_code(simple)
-    print("\n")
-
-    # # ...так и декорированные.
-    # #
-    # # Обратите внимание, что декораторы могут обёртывать не только простые
-    # # компоненты, но и другие декораторы.
-    decorator1 = ConcreteDecoratorA(simple)
-    decorator2 = ConcreteDecoratorB(decorator1)
-
-    print("Client: Now I've got a decorated component:")
-    client_code(decorator2)
-
-    print('Back to json')
-    dec3 = ConcreteDecoratorA(decorator2)
-    client_code(dec3)
+    return component.get_currencies()
