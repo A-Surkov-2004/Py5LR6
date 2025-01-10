@@ -1,5 +1,6 @@
 import time
 
+
 class CurrenciesLst():
 
     def __init__(self):
@@ -8,11 +9,11 @@ class CurrenciesLst():
 
 class Singleton(type):
     _instances = {}
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
-
 
 
 class BaseClass:
@@ -50,7 +51,6 @@ class BaseClass:
         from xml.etree import \
             ElementTree as ET
 
-
         cur_res_str = requests.get('http://www.cbr.ru/scripts/XML_daily.asp')
         result = []
 
@@ -66,30 +66,12 @@ class BaseClass:
                     'Value').text
                 value = valute_cur_val.split(',')
                 valute_charcode = _v.find('CharCode').text
-                valute[valute_charcode] = f'''('name':'{valute_cur_name}', 'value':'{value[0]}', 'fractions':'{value[1]}')'''
+                valute[
+                    valute_charcode] = f'''('name':'{valute_cur_name}', 'value':'{value[0]}', 'fractions':'{value[1]}')'''
                 result.append(valute)
 
         return result
 
-
-    def visualize_currencies(self):
-        import matplotlib.pyplot as plt
-
-        fig, ax = plt.subplots()
-        currencies = []
-        val = []
-        cur_lst = self.get_currencies()
-        for el in cur_lst:
-            key = str(el.keys())[12:15]
-            currencies.append(key)
-            val.append(el[key][1]+el[key][2]/pow(10, len(str(el[key][2]))))
-
-        ax.bar(currencies, val)
-
-        ax.set_ylabel('exchange rate')
-        ax.set_title('visualized currencies')
-
-        plt.show()
 
 class MyClass(BaseClass, metaclass=Singleton):
     pass

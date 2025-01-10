@@ -4,7 +4,7 @@ from src.decor import *
 def test1():
     # given
     simple = ConcreteComponent()
-    decorator1 = ConcreteDecoratorA(simple)
+    decorator1 = ToJSON(simple)
 
     # when
     ans = client_code(decorator1)
@@ -16,8 +16,8 @@ def test1():
 def test2():
     # given
     simple = ConcreteComponent()
-    decorator1 = ConcreteDecoratorA(simple)
-    decorator2 = ConcreteDecoratorB(simple)
+    decorator1 = ToJSON(simple)
+    decorator2 = ToCSV(simple)
 
     # when
     ans1 = client_code(decorator1)
@@ -29,9 +29,9 @@ def test2():
 def test3():
     # given
     simple = ConcreteComponent()
-    decorator1 = ConcreteDecoratorA(simple)
-    decorator2 = ConcreteDecoratorB(decorator1)
-    dec3 = ConcreteDecoratorA(decorator2)
+    decorator1 = ToJSON(simple)
+    decorator2 = ToCSV(decorator1)
+    dec3 = ToJSON(decorator2)
 
     # when
     ans1 = client_code(decorator1)

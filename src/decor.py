@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 
 
 class Component(ABC):
-
     """
     Базовый интерфейс Компонента определяет поведение, которое изменяется
     декораторами.
@@ -33,12 +32,12 @@ class ConcreteComponent(Component):
 
     def get_currency(self, cid):
         return self.cc.get_currency(cid)
+
     """
     Конкретные Компоненты предоставляют реализации поведения по умолчанию. Может
     быть несколько вариаций этих классов.
     Для нашей программы ConcreteComponent - Класс возвращающий dict
     """
-
 
     def operation(self) -> str:
         return "ConcreteComponent"
@@ -74,21 +73,17 @@ class Decorator(Component):
         return self._component.get_currencies()
 
     def get_currency(self, cid):
-        return  self._component.get_currency(cid)
+        return self._component.get_currency(cid)
 
 
-
-
-class ConcreteDecoratorA(Decorator):
+class ToJSON(Decorator):
     """
     Конкретные Декораторы вызывают обёрнутый объект и изменяют его результат
     некоторым образом.
     Для нашей программы ConcreteDecoratorA - Класс возвращающий json
     """
 
-
     def operation(self) -> str:
-
 
         """
         Декораторы могут вызывать родительскую реализацию операции, вместо того,
@@ -117,17 +112,13 @@ class ConcreteDecoratorA(Decorator):
             return ans
 
 
-
-
-
-
-class ConcreteDecoratorB(Decorator):
-
+class ToCSV(Decorator):
     """
     Декораторы могут выполнять своё поведение до или после вызова обёрнутого
     объекта.
     Для нашей программы ConcreteDecoratorB - Класс возвращающий csv
     """
+
     def get_currencies(self):
         cin = self.component.get_currencies()
         data = json.loads(str(cin).replace('"', '').replace("'", '"').replace('(', '{').replace(')', '}'))
@@ -139,17 +130,14 @@ class ConcreteDecoratorB(Decorator):
         csv_writer.writerow(new_row)
 
         for cur in data:
-
             code = list(cur.keys())[0]
             name = cur[code]['name']
             value = cur[code]['value']
             fractions = cur[code]['fractions']
-            new_row = [code,name,value,fractions]
+            new_row = [code, name, value, fractions]
             csv_writer.writerow(new_row)
 
         return csv_buffer.getvalue()
-
-
 
     def operation(self) -> str:
         return f"ConcreteDecoratorB({self.component.operation()})"
